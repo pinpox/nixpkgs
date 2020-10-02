@@ -1321,6 +1321,8 @@ in {
 
   cozy = callPackage ../development/python-modules/cozy { };
 
+  cppheaderparser = callPackage ../development/python-modules/cppheaderparser { };
+
   cppy = callPackage ../development/python-modules/cppy { };
 
   cram = callPackage ../development/python-modules/cram { };
@@ -6932,10 +6934,9 @@ in {
 
   tensorflow-build_2 = callPackage ../development/python-modules/tensorflow/2 {
     cudaSupport = pkgs.config.cudaSupport or false;
-    inherit (pkgs.linuxPackages) nvidia_x11;
-    cudatoolkit = pkgs.cudatoolkit_10;
-    cudnn = pkgs.cudnn_cudatoolkit_10;
-    nccl = pkgs.nccl_cudatoolkit_10;
+    cudatoolkit = pkgs.cudatoolkit_11;
+    cudnn = pkgs.cudnn_cudatoolkit_11;
+    nccl = pkgs.nccl_cudatoolkit_11;
     openssl = pkgs.openssl_1_1;
     inherit (pkgs.darwin.apple_sdk.frameworks) Foundation Security;
   };

@@ -1536,9 +1536,7 @@ in
     buildGoModule = buildGo114Module;
   };
 
-  # Traefik 2.2 uses go1.14, pinning can be removed with 2.3
-  # https://github.com/containous/traefik/issues/7234#issuecomment-684950612
-  traefik = callPackage ../servers/traefik { buildGoModule = buildGo114Module; };
+  traefik = callPackage ../servers/traefik { };
 
   calamares = libsForQt514.callPackage ../tools/misc/calamares {
     python = python3;
@@ -2351,7 +2349,7 @@ in
 
   psstop = callPackage ../tools/system/psstop { };
 
-  precice = callPackage ../development/libraries/precice { };
+  precice = callPackage ../development/libraries/precice { python3 = python37; };
 
   pueue = callPackage ../applications/misc/pueue { };
 
@@ -6089,6 +6087,8 @@ in
 
   pacman = callPackage ../tools/package-management/pacman { };
 
+  paco = callPackage ../development/compilers/paco { };
+
   padthv1 = libsForQt5.callPackage ../applications/audio/padthv1 { };
 
   page = callPackage ../tools/misc/page { };
@@ -7276,6 +7276,8 @@ in
   swiften = callPackage ../development/libraries/swiften { };
 
   t = callPackage ../tools/misc/t { };
+
+  tabnine = callPackage ../development/tools/tabnine { };
 
   t1utils = callPackage ../tools/misc/t1utils { };
 
@@ -9363,7 +9365,7 @@ in
   lld_10 = llvmPackages_10.lld;
   lld_11 = llvmPackages_11.lld;
 
-  lldb = llvmPackages.lldb;
+  lldb = llvmPackages_latest.lldb;
   lldb_5 = llvmPackages_5.lldb;
   lldb_6 = llvmPackages_6.lldb;
   lldb_7 = llvmPackages_7.lldb;
@@ -10354,6 +10356,7 @@ in
   }));
   spidermonkey_60 = callPackage ../development/interpreters/spidermonkey/60.nix { };
   spidermonkey_68 = callPackage ../development/interpreters/spidermonkey/68.nix { };
+  spidermonkey_78 = callPackage ../development/interpreters/spidermonkey/78.nix { };
   spidermonkey = spidermonkey_38;
 
   ssm-agent = callPackage ../applications/networking/cluster/ssm-agent { };
@@ -10752,6 +10755,8 @@ in
   chrpath = callPackage ../development/tools/misc/chrpath { };
 
   chruby = callPackage ../development/tools/misc/chruby { rubies = null; };
+
+  chruby-fish = callPackage ../development/tools/misc/chruby-fish { };
 
   cl-launch = callPackage ../development/tools/misc/cl-launch {};
 
@@ -11515,6 +11520,8 @@ in
   sauce-connect = callPackage ../development/tools/sauce-connect { };
 
   scaff = callPackage ../development/tools/scaff { };
+
+  sd-local = callPackage ../development/tools/sd-local { };
 
   selenium-server-standalone = callPackage ../development/tools/selenium/server { };
 
@@ -16921,7 +16928,7 @@ in
     asciidoc = asciidoc-full;
   };
 
-  timescale-prometheus = callPackage ../servers/monitoring/timescale-prometheus { };
+  promscale = callPackage ../servers/monitoring/prometheus/promscale.nix { };
 
   timescaledb-parallel-copy = callPackage ../development/tools/database/timescaledb-parallel-copy { };
 
@@ -20106,8 +20113,6 @@ in
   };
 
   das_watchdog = callPackage ../tools/system/das_watchdog { };
-
-  dbvisualizer = callPackage ../applications/misc/dbvisualizer {};
 
   dd-agent = callPackage ../tools/networking/dd-agent/5.nix { };
   datadog-agent = callPackage ../tools/networking/dd-agent/datadog-agent.nix {
@@ -23568,6 +23573,7 @@ in
 
   thonny = callPackage ../applications/editors/thonny { };
 
+  thunderbird = thunderbird-78;
   thunderbird-78 = callPackage ../applications/networking/mailreaders/thunderbird {
     inherit (rustPackages_1_44) cargo rustc;
     libpng = libpng_apng;
@@ -23576,7 +23582,7 @@ in
     gtk3Support = true;
   };
 
-  thunderbird = callPackage ../applications/networking/mailreaders/thunderbird/68.nix {
+  thunderbird-68 = callPackage ../applications/networking/mailreaders/thunderbird/68.nix {
     inherit (rustPackages_1_44) cargo rustc;
     libpng = libpng_apng;
     nss = nss_3_44;
@@ -23585,9 +23591,10 @@ in
 
   thunderbolt = callPackage ../os-specific/linux/thunderbolt {};
 
+  thunderbird-bin = thunderbird-bin-78;
   thunderbird-bin-78 = callPackage ../applications/networking/mailreaders/thunderbird-bin { };
 
-  thunderbird-bin = callPackage ../applications/networking/mailreaders/thunderbird-bin/68.nix { };
+  thunderbird-bin-68 = callPackage ../applications/networking/mailreaders/thunderbird-bin/68.nix { };
 
   ticpp = callPackage ../development/libraries/ticpp { };
 
@@ -28176,5 +28183,7 @@ in
   unifi-poller = callPackage ../servers/monitoring/unifi-poller {};
 
   fac-build = callPackage ../development/tools/build-managers/fac {};
+
+  bottom = callPackage ../tools/system/bottom {};
 
 }
