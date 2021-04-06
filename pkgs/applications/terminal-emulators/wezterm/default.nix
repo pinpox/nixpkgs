@@ -61,7 +61,7 @@ in
 
 rustPlatform.buildRustPackage {
   inherit pname;
-  version = "20210314";
+  version = "nightly";
 
   src = fetchFromGitHub {
     owner = "wez";
