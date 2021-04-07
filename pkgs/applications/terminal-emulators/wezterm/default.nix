@@ -61,13 +61,13 @@ in
 
 rustPlatform.buildRustPackage {
   inherit pname;
-  version = "20210314";
+  version = "20210407-nightly";
 
   src = fetchFromGitHub {
     owner = "wez";
     repo = pname;
-    rev = "20210314-114017-04b7cedd";
-    sha256 = "sha256-EwoJLwOgoXtTEBbf/4pM+pCCG8fGkVruHVYh2HivCd0=";
+    rev = "d2419fb99e567e3b260980694cc840a1a3b86922";
+    sha256 = "4tVjrdDlrDPKzcbTYK9vRlzfC9tfvkD+D0aN19A8RWE=";
     fetchSubmodules = true;
   };
   cargoSha256 = "sha256-OHbWgnlul9VfbPcMdzbuRJG59+myiukkzmnWohj5v2k=";
