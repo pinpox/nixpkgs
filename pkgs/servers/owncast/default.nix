@@ -26,12 +26,12 @@ buildGoModule rec {
   postInstall = let
 
     setupScript = ''
-      [ ! -d $PWD/webroot ] && (
-        cp -r ${placeholder "out"}/webroot $PWD
+      [ ! -d "$PWD/webroot" ] && (
+        cp -r "${placeholder "out"}/webroot" "$PWD"
       )
 
-      [ ! -d $PWD/static] && (
-        ln -s ${placeholder "out"}/static $PWD
+      [ ! -d "$PWD/static" ] && (
+        ln -s "${placeholder "out"}/static" "$PWD"
       )
     '';
   in ''
