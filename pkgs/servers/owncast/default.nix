@@ -25,10 +25,8 @@ buildGoModule rec {
 
   postInstall = let
     setupScript = ''
-      [ ! -d $PWD/{static,webroot} ] && (
-        cp -r ${placeholder "out"}/webroot $PWD
-        ln -s ${placeholder "out"}/static $PWD
-      )
+      cp -r ${placeholder "out"}/webroot $PWD
+      ln -s ${placeholder "out"}/static $PWD
     '';
   in ''
     wrapProgram $out/bin/owncast \
