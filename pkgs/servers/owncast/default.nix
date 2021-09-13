@@ -1,4 +1,5 @@
-{ lib, buildGoModule, fetchFromGitHub, bash, which, ffmpeg, makeWrapper, ... }:
+{ lib, buildGoModule, fetchFromGitHub, nixosTests, bash, which, ffmpeg
+, makeWrapper, ... }:
 
 buildGoModule rec {
 
@@ -45,6 +46,8 @@ buildGoModule rec {
     $out/bin/owncast --help
     runHook postCheck
   '';
+
+  passthru.tests.owncast = nixosTests.testOwncast;
 
   meta = with lib; {
     description = "self-hosted video live streaming solution";
