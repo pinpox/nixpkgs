@@ -69,7 +69,7 @@ in {
         ln -fs ${pkgs.owncast}/static .
 
         # TODO: Selectively copy webroot/ directory in?
-        cp -r ${pkgs.owncast}/webroot .
+        cp -r --no-preserve=mode ${pkgs.owncast}/webroot .
       '';
 
       serviceConfig = mkMerge [
