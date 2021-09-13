@@ -51,7 +51,7 @@ buildGoModule rec {
     homepage = "https://owncast.online";
     license = licenses.mit;
     platforms = platforms.unix;
-    maintainers = with maintainers; [ mayniklas ];
+    maintainers = with maintainers; [ MayNiklas ];
   };
 
 }
