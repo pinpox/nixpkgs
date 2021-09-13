@@ -66,7 +66,10 @@ in {
       description = "A self-hosted live video and web chat server";
       wantedBy = [ "multi-user.target" ];
       preStart = ''
-        # TODO: remove old data? symlink static/ directory in, overwriting old symlinks. selectively copy webroot/ directory in?
+        ln -fs ${pkgs.owncast}/usr/share/static .
+
+        # TODO: Selectively copy webroot/ directory in?
+        cp -r ${pkgs.owncast}/usr/share/webroot .
       '';
 
       serviceConfig = mkMerge [
