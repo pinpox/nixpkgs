@@ -20,7 +20,7 @@ buildGoModule rec {
 
   preInstall = ''
     mkdir -p $out
-    cp -r $src/{static,webroot} $out
+    cp -r --no-preserve=mode $src/{static,webroot} $out
   '';
 
   postInstall = let
