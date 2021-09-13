@@ -23,7 +23,9 @@ buildGoModule rec {
       lib.makeBinPath [ bash which ffmpeg ]
     }
 
-    # TODO: copy in static and webroot directories
+    mkdir -p $out/usr/share/
+    cp -r ./static $out/usr/share/static
+    cp -r ./webroot $out/usr/share/webroot
   '';
 
   installCheckPhase = ''
