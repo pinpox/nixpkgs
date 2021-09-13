@@ -44,7 +44,7 @@ in {
 
     port = mkOption {
       type = types.port;
-      default = 80;
+      default = 8080;
       description = ''
         TCP port where owncast web-gui listens.
       '';
