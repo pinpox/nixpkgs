@@ -66,10 +66,10 @@ in {
       description = "A self-hosted live video and web chat server";
       wantedBy = [ "multi-user.target" ];
       preStart = ''
-        ln -fs ${pkgs.owncast}/usr/share/static .
+        ln -fs ${pkgs.owncast}/static .
 
         # TODO: Selectively copy webroot/ directory in?
-        cp -r ${pkgs.owncast}/usr/share/webroot .
+        cp -r ${pkgs.owncast}/webroot .
       '';
 
       serviceConfig = mkMerge [
