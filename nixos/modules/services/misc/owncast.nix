@@ -65,9 +65,6 @@ in {
     systemd.services.owncast = {
       description = "A self-hosted live video and web chat server";
       wantedBy = [ "multi-user.target" ];
-      preStart = ''
-        # TODO: remove old data? symlink static/ directory in, overwriting old symlinks. selectively copy webroot/ directory in?
-      '';
 
       serviceConfig = mkMerge [
         {

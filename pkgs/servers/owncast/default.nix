@@ -18,12 +18,26 @@ buildGoModule rec {
 
   buildInputs = [ makeWrapper ];
 
-  postInstall = ''
-    wrapProgram $out/bin/owncast --prefix PATH : ${
-      lib.makeBinPath [ bash which ffmpeg ]
-    }
+  preInstall = ''
+    mkdir -p $out
+    cp -r $src/{static,webroot} $out
+  '';
 
-    # TODO: copy in static and webroot directories
+  postInstall = let
+
+    setupScript = ''
+      [ ! -d "$PWD/webroot" ] && (
+        cp --no-preserve=mode -r "${placeholder "out"}/webroot" "$PWD"
+      )
+
+      [ ! -d "$PWD/static" ] && (
+        ln -s "${placeholder "out"}/static" "$PWD"
+      )
+    '';
+  in ''
+    wrapProgram $out/bin/owncast \
+      --run '${setupScript}' \
+      --prefix PATH : ${lib.makeBinPath [ bash which ffmpeg ]}
   '';
 
   installCheckPhase = ''
