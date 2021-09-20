@@ -1,4 +1,4 @@
-{ lib, buildGoModule, fetchFromGitHub, bash, which, ffmpeg, makeWrapper, ... }:
+{ lib, buildGoModule, fetchFromGitHub, bash, which, ffmpeg, makeWrapper, coreutils, ... }:
 
 buildGoModule rec {
 
@@ -27,11 +27,11 @@ buildGoModule rec {
 
     setupScript = ''
       [ ! -d "$PWD/webroot" ] && (
-        cp --no-preserve=mode -r "${placeholder "out"}/webroot" "$PWD"
+        ${coreutils}/bin/cp --no-preserve=mode -r "${placeholder "out"}/webroot" "$PWD"
       )
 
       [ ! -d "$PWD/static" ] && (
-        ln -s "${placeholder "out"}/static" "$PWD"
+        ${coreutils}/bin/ln -s "${placeholder "out"}/static" "$PWD"
       )
     '';
   in ''
