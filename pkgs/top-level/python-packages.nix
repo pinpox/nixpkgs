@@ -12851,6 +12851,9 @@ self: super: with self; {
 
   simplisafe-python = callPackage ../development/python-modules/simplisafe-python { };
 
+  simplicial = callPackage ../development/python-modules/simplicial  { };
+
+
   simpful = callPackage ../development/python-modules/simpful { };
 
   simpy = callPackage ../development/python-modules/simpy { };
