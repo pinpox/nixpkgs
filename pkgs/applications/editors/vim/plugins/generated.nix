@@ -3,18 +3,6 @@
 
 final: prev:
 {
-  age-secret-nvim = buildVimPlugin {
-    pname = "age-secret.nvim";
-    version = "2023-12-10";
-    src = fetchFromGitHub {
-      owner = "histrio";
-      repo = "age-secret.nvim";
-      rev = "4e5d6936bb8ed0beeac03bb9f983763168dea290";
-      sha256 = "1bjq0k6scbmgyc98x6vbk3572i4a7h6vyf1r1d8fmbfnga1kbka4";
-    };
-    meta.homepage = "https://github.com/histrio/age-secret.nvim/";
-  };
-
   BetterLua-vim = buildVimPlugin {
     pname = "BetterLua.vim";
     version = "2020-08-14";
@@ -567,6 +555,18 @@ final: prev:
       sha256 = "0d4gwgdy4y52gycz33y5ar9rj0r2y6bkjnyns3br2iy0x4rzghff";
     };
     meta.homepage = "https://github.com/derekelkins/agda-vim/";
+  };
+
+  age-secret-nvim = buildVimPlugin {
+    pname = "age-secret.nvim";
+    version = "2023-12-10";
+    src = fetchFromGitHub {
+      owner = "histrio";
+      repo = "age-secret.nvim";
+      rev = "4e5d6936bb8ed0beeac03bb9f983763168dea290";
+      sha256 = "1bjq0k6scbmgyc98x6vbk3572i4a7h6vyf1r1d8fmbfnga1kbka4";
+    };
+    meta.homepage = "https://github.com/histrio/age-secret.nvim/";
   };
 
   ai-vim = buildVimPlugin {

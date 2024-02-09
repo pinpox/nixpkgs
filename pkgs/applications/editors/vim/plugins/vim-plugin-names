@@ -1,5 +1,4 @@
 repo,branch,alias
-https://github.com/histrio/age-secret.nvim,,
 https://github.com/euclidianAce/BetterLua.vim/,,
 https://github.com/vim-scripts/BufOnly.vim/,,
 https://github.com/jackMort/ChatGPT.nvim/,HEAD,
@@ -46,6 +45,7 @@ https://github.com/Mofiqul/adwaita.nvim/,HEAD,
 https://github.com/stevearc/aerial.nvim/,,
 https://github.com/Numkil/ag.nvim/,,
 https://github.com/derekelkins/agda-vim/,,
+https://github.com/histrio/age-secret.nvim/,,
 https://github.com/aduros/ai.vim/,HEAD,
 https://github.com/slashmili/alchemist.vim/,,
 https://github.com/dense-analysis/ale/,,
