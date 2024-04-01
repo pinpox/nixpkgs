@@ -673,6 +673,7 @@ let
     security = {
       # Report BUG() conditions and kill the offending process.
       BUG = yes;
+      BUG_ON_DATA_CORRUPTION = yes;
 
       FORTIFY_SOURCE                   = option yes;
 
