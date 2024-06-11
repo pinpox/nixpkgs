@@ -6803,6 +6803,8 @@ with pkgs;
 
     openbangla-keyboard = libsForQt5.callPackage ../applications/misc/openbangla-keyboard { withIbusSupport = true; };
 
+    pinyin = callPackage ../tools/inputmethods/ibus-engines/ibus-pinyin { };
+
     rime = callPackage ../tools/inputmethods/ibus-engines/ibus-rime { };
 
     table = callPackage ../tools/inputmethods/ibus-engines/ibus-table { };
