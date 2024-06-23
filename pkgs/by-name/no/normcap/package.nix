@@ -76,7 +76,7 @@ ps.buildPythonApplication rec {
     ps.toml
   ] ++ lib.optionals stdenv.isLinux [
     ps.pytest-xvfb
-    xorg.xorgserver
+    xorg.xvfb
   ];
 
   preCheck = ''
