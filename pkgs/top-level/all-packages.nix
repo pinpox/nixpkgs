@@ -1532,6 +1532,7 @@ with pkgs;
     admin-fe = callPackage ../servers/akkoma/admin-fe {
       nodejs = nodejs_18;
       yarn = yarn.override { nodejs = nodejs_18; };
+      python3 = python311;
     };
   };
   akkoma-emoji = recurseIntoAttrs {
