@@ -23649,8 +23649,6 @@ with pkgs;
 
   plib = callPackage ../development/libraries/plib { };
 
-  pocl = callPackage ../development/libraries/pocl { };
-
   poco = callPackage ../development/libraries/poco { };
 
   podofo = callPackage ../development/libraries/podofo { };
