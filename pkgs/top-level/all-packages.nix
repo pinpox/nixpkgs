@@ -1549,8 +1549,6 @@ with pkgs;
     wxGTK = wxGTK32;
   } // (config.aegisub or {}));
 
-  aerc = callPackage ../applications/networking/mailreaders/aerc { };
-
   aerospike = callPackage ../servers/nosql/aerospike { };
 
   aespipe = callPackage ../tools/security/aespipe { };
