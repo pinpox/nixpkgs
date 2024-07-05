@@ -29436,7 +29436,6 @@ with pkgs;
     # Avoid circular dependency
     audacious = audacious.override { audacious-plugins = null; };
   };
-  audaciousQt5 = audacious;
 
   audacity = callPackage ../applications/audio/audacity {
     inherit (darwin.apple_sdk.frameworks) AppKit CoreAudioKit;
