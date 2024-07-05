@@ -2,15 +2,13 @@
   lib,
   agate,
   buildPythonPackage,
-  cffi,
   click,
-  colorama,
+  daff,
+  dbt-adapters,
+  dbt-common,
   dbt-extractor,
   dbt-semantic-interfaces,
   fetchFromGitHub,
-  hologram,
-  idna,
-  isodate,
   jinja2,
   logbook,
   mashumaro,
@@ -28,8 +26,6 @@
   setuptools,
   sqlparse,
   typing-extensions,
-  urllib3,
-  werkzeug,
 }:
 
 buildPythonPackage rec {
@@ -51,6 +47,7 @@ buildPythonPackage rec {
   pythonRelaxDeps = [
     "agate"
     "click"
+    "dbt-semantic-interfaces"
     "mashumaro"
     "networkx"
     "logbook"
@@ -65,14 +62,12 @@ buildPythonPackage rec {
 
   dependencies = [
     agate
-    cffi
     click
-    colorama
+    daff
+    dbt-adapters
+    dbt-common
     dbt-extractor
     dbt-semantic-interfaces
-    hologram
-    idna
-    isodate
     jinja2
     logbook
     mashumaro
@@ -86,8 +81,6 @@ buildPythonPackage rec {
     requests
     sqlparse
     typing-extensions
-    urllib3
-    werkzeug
   ] ++ mashumaro.optional-dependencies.msgpack;
 
   # tests exist for the dbt tool but not for this package specifically
