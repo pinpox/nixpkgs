@@ -1,56 +1,43 @@
 { lib
-, mkYarnPackage
+, stdenv
 , fetchFromGitHub
 , fetchYarnDeps
 , nodejs
-, fixup-yarn-lock
-, yarn
+, yarnConfigHook
+, yarnBuildHook
 
-}: mkYarnPackage rec {
+}: stdenv.mkDerivation (finalAttrs: rec {
 
 
   pname = "ente-web";
   version = "photos-v0.9.5";
 
-  src = fetchFromGitHub {
-    owner = "ente-io";
-    repo = "ente";
-    sparseCheckout = [ "web" ];
-    rev = version;
-    hash = "sha256-ky37MAREFzGskokVxJUarYXpFpbq85TS31QAp027hqg=";
-  };
-
-  sourceRoot = "source/web";
-
-  packageJSON = "${src}/web/package.json";
+  src =
+    let
+      repo = fetchFromGitHub {
+        owner = "ente-io";
+        repo = "ente";
+        sparseCheckout = [ "web" ];
+        rev = version;
+        fetchSubmodules = true;
+        hash = "sha256-YJuhdMrgOQW4+LaxEvZNmFZDlFRBmPZot8oUdACdhhE=";
+      };
+    in
+    "${repo}/web";
 
   offlineCache = fetchYarnDeps {
-    yarnLock = "${src}/web/yarn.lock";
+    yarnLock = "${finalAttrs.src}/yarn.lock";
     hash = "sha256-ZGZkpHZD2LoMIXzpQRAO4Fh9Jf4WxosgykKnn7I1+2g=";
   };
 
-  # passthru.updateScript = nix-update-script { };
-
   nativeBuildInputs = [
+    yarnConfigHook
+    yarnBuildHook
     nodejs
-    fixup-yarn-lock
-    yarn
   ];
 
-  configurePhase = ''
-    runHook preConfigure
-    export HOME=$(mktemp -d)
-    yarn config --offline set yarn-offline-mirror $offlineCache
-    fixup-yarn-lock yarn.lock
-    yarn --offline --frozen-lockfile --ignore-platform --ignore-scripts --no-progress --non-interactive install
-    patchShebangs node_modules
-    runHook postConfigure
-  '';
-
-  buildPhase = ''
-    runHook preBuild
-    yarn --offline build:photos
-    runHook postBuild
+  installPhase = ''
+    cp -r apps/photos/out $out
   '';
 
   meta = with lib; {
@@ -61,4 +48,4 @@
     mainProgram = "web";
     platforms = platforms.linux;
   };
-}
+})
