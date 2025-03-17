@@ -300,6 +300,10 @@ in
     dependencies = [ self.blink-cmp ];
   };
 
+  blink-nerdfont-nvim = super.blink-nerdfont-nvim.overrideAttrs {
+    dependencies = [ self.blink-cmp ];
+  };
+
   blink-cmp-git = super.blink-cmp-git.overrideAttrs {
     dependencies = [ self.plenary-nvim ];
   };
@@ -2652,6 +2656,10 @@ in
         zathura = lib.getExe zathura;
       })
     ];
+  };
+
+  org-roam-nvim = super.org-roam-nvim.overrideAttrs {
+    dependencies = [ self.orgmode ];
   };
 
   otter-nvim = super.otter-nvim.overrideAttrs {
