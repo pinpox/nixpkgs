@@ -5113,6 +5113,8 @@ self: super: with self; {
 
   funcsigs = callPackage ../development/python-modules/funcsigs { };
 
+  functions-framework = callPackage ../development/python-modules/functions-framework { };
+
   functiontrace = callPackage ../development/python-modules/functiontrace { };
 
   funcy = callPackage ../development/python-modules/funcy { };
@@ -7815,6 +7817,8 @@ self: super: with self; {
   llm-anthropic = callPackage ../development/python-modules/llm-anthropic { };
 
   llm-cmd = callPackage ../development/python-modules/llm-cmd { };
+
+  llm-gemini = callPackage ../development/python-modules/llm-gemini { };
 
   llm-gguf = callPackage ../development/python-modules/llm-gguf { };
 
@@ -12643,6 +12647,8 @@ self: super: with self; {
 
   pyowm = callPackage ../development/python-modules/pyowm { };
 
+  pyoxigraph = callPackage ../development/python-modules/pyoxigraph { };
+
   pypager = callPackage ../development/python-modules/pypager { };
 
   pypamtest = toPythonModule (pkgs.libpam-wrapper.override {
@@ -15398,6 +15404,8 @@ self: super: with self; {
   smmap = callPackage ../development/python-modules/smmap { };
 
   smoke-zephyr = callPackage ../development/python-modules/smoke-zephyr { };
+
+  smolagents = callPackage ../development/python-modules/smolagents { };
 
   smpplib = callPackage ../development/python-modules/smpplib { };
 
