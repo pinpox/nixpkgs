@@ -1347,4 +1347,262 @@ rec {
   writeFSharp = makeFSharpWriter { };
 
   writeFSharpBin = name: writeFSharp "/bin/${name}";
+
+  /**
+    writeAIBin takes a name and a string containing a prompt, and creates an executable script
+    that, when run, will send the prompt to a local LLM via Ollama and execute the generated code.
+
+    # Parameters
+    - `name`: The name of the output script
+    - `prompt`: The prompt to send to the LLM
+    - `modelName`: Optional model name to use (defaults to "codellama")
+    - `options`: Optional additional parameters (see below)
+
+    # Options
+    - `ollamaPort`: Port where Ollama is running (default: 11434)
+    - `ollamaHost`: Host where Ollama is running (default: "localhost")
+    - `timeout`: Timeout for the LLM response in seconds (default: 60)
+    - `systemPrompt`: System prompt to set context for the LLM (default: "You are a helpful assistant that generates code.")
+    - `cacheResponses`: Whether to cache responses (default: true)
+    - `cacheDir`: Directory to store cached responses (default: "~/.cache/nix-ai-bin")
+
+    # Examples
+    :::{.example}
+    ## `pkgs.writers.writeAIBin` usage example
+
+    ```nix
+    writeAIBin "generate-greeting" ''
+      Write a short shell script that prints a random greeting
+    ''
+    ```
+
+    ## Using with specific model and options
+
+    ```nix
+    writeAIBin "generate-greeting"
+      {
+        prompt = ''
+          Write a short shell script that prints a random greeting
+        '';
+        modelName = "llama3";
+        systemPrompt = "You are an expert shell script programmer.";
+        ollamaPort = 8000;
+      }
+    ```
+
+    The above example creates an executable named `generate-greeting` that, when run,
+    will generate a script using the LLM and execute it.
+    :::
+  */
+  writeAIBin =
+    name: args:
+    let
+      # Handle both simple string usage and attribute set usage
+      isString = builtins.isString args;
+
+      # Extract parameters with defaults
+      prompt = if isString then args else args.prompt;
+      modelName = if isString then "codellama" else (args.modelName or "codellama");
+      ollamaPort = toString (if isString then 11434 else (args.ollamaPort or 11434));
+      ollamaHost = if isString then "localhost" else (args.ollamaHost or "localhost");
+      timeout = toString (if isString then 60 else (args.timeout or 60));
+      systemPrompt =
+        if isString then
+          "You are a helpful assistant that generates code."
+        else
+          (args.systemPrompt or "You are a helpful assistant that generates code.");
+      cacheResponses = if isString then true else (args.cacheResponses or true);
+      cacheDir = if isString then "~/.cache/nix-ai-bin" else (args.cacheDir or "~/.cache/nix-ai-bin");
+
+      # Create the Python script that will run at execution time
+      aiRunner =
+        writePython3 "ai-bin-runner.py"
+          {
+            libraries = with pkgs.python3Packages; [ ollama ];
+            flakeIgnore = [
+              "E128"  # continuation line under-indented for visual indent
+              "E302"  # expected 2 blank lines, found 1
+              "E305"  # expected 2 blank lines after class or function definition
+              "E501"  # line too long
+              "E722"  # do not use bare except
+              "F401"  # imported but unused
+              "F824"  # variable is unused: name is never assigned in scope
+              "W291"  # trailing whitespace
+              "W293"  # blank line contains whitespace
+            ];
+          }
+          ''
+            import sys
+            import os
+            import asyncio
+            import hashlib
+            import json
+            import tempfile
+            import subprocess
+            import signal
+            import time
+
+            # Check if ollama module is available, and install it if not
+            try:
+                import ollama
+            except ImportError:
+                print("Ollama Python module not found. Attempting to install...", file=sys.stderr)
+                subprocess.check_call([sys.executable, "-m", "pip", "install", "ollama"])
+                import ollama
+
+            # Configuration
+            MODEL = '${modelName}'
+            OLLAMA_HOST = '${ollamaHost}'
+            OLLAMA_PORT = ${ollamaPort}
+            TIMEOUT = ${timeout}
+            SYSTEM_PROMPT = '${systemPrompt}'
+            USE_CACHE = ${if cacheResponses then "True" else "False"}
+            CACHE_DIR = os.path.expanduser('${cacheDir}')
+            PROMPT = '${prompt}'
+
+            # Initialize cache directory
+            if USE_CACHE and not os.path.exists(CACHE_DIR):
+                os.makedirs(CACHE_DIR, exist_ok=True)
+
+            def get_cache_key():
+                """Generate a cache key based on inputs"""
+                key_data = {
+                    "model": MODEL,
+                    "prompt": PROMPT,
+                    "system_prompt": SYSTEM_PROMPT
+                }
+                key_str = json.dumps(key_data, sort_keys=True)
+                return hashlib.md5(key_str.encode()).hexdigest()
+
+            def check_ollama_running():
+                """Check if Ollama is running on the specified host and port"""
+                try:
+                    import urllib.request
+                    import urllib.error
+                    url = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}/api/tags"
+                    urllib.request.urlopen(url, timeout=2)
+                    return True
+                except Exception:
+                    return False
+
+            def clean_response(response):
+                """Clean up the LLM response to extract code"""
+                content = response.strip()
+
+                # Extract code from markdown blocks if present
+                if content.startswith("```") and "```" in content[3:]:
+                    # Find the first and last code block markers
+                    start = content.find("\n", content.find("```")) + 1
+                    end = content.rfind("```")
+
+                    # Extract the code between the markers
+                    if start < end:
+                        content = content[start:end].strip()
+
+                # Add shebang if not present
+                if not content.startswith("#!"):
+                    if "python" in content.lower()[:20]:
+                        content = "#!/usr/bin/env python3\n" + content
+                    else:
+                        content = "#!/usr/bin/env bash\n" + content
+
+                return content
+
+            async def generate_code():
+                """Generate code using the LLM"""
+                cache_key = get_cache_key() if USE_CACHE else None
+                cache_file = os.path.join(CACHE_DIR, cache_key) if cache_key else None
+
+                # Check cache first
+                if USE_CACHE and os.path.exists(cache_file):
+                    print(f"Using cached response for '{PROMPT[:40]}...'", file=sys.stderr)
+                    with open(cache_file, 'r') as f:
+                        return f.read()
+
+                # Check if Ollama is running
+                if not check_ollama_running():
+                    print(f"Ollama is not running at {OLLAMA_HOST}:{OLLAMA_PORT}", file=sys.stderr)
+                    print("Please start Ollama with: ollama serve", file=sys.stderr)
+                    sys.exit(1)
+
+                # Configure Ollama client
+                ollama.base_url = f"http://{OLLAMA_HOST}:{OLLAMA_PORT}"
+
+                try:
+                    # Check if model exists, pull if not
+                    print(f"Checking if model '{MODEL}' is available...", file=sys.stderr)
+                    models = await ollama.list()
+                    model_exists = any(model['name'] == MODEL for model in models['models'])
+
+                    if not model_exists:
+                        print(f"Model '{MODEL}' not found, pulling it now...", file=sys.stderr)
+                        await ollama.pull(MODEL)
+
+                    # Generate the response
+                    print(f"Generating code using model '{MODEL}'...", file=sys.stderr)
+                    response = await asyncio.wait_for(
+                        ollama.chat(
+                            model=MODEL,
+                            messages=[
+                                {'role': 'system', 'content': SYSTEM_PROMPT},
+                                {'role': 'user', 'content': PROMPT}
+                            ],
+                            stream=False
+                        ),
+                        timeout=float(TIMEOUT)
+                    )
+
+                    # Extract and clean the content
+                    content = clean_response(response['message']['content'])
+
+                    # Cache the response if enabled
+                    if USE_CACHE and cache_file:
+                        with open(cache_file, 'w') as f:
+                            f.write(content)
+
+                    return content
+
+                except Exception as e:
+                    print(f"Error generating code: {str(e)}", file=sys.stderr)
+                    sys.exit(1)
+
+            def execute_code(code):
+                """Execute the generated code"""
+                # Create a temporary file for the code
+                with tempfile.NamedTemporaryFile(delete=False, mode='w') as f:
+                    f.write(code)
+                    temp_path = f.name
+
+                try:
+                    # Make it executable
+                    os.chmod(temp_path, 0o755)
+
+                    # Execute the code
+                    result = subprocess.run([temp_path] + sys.argv[1:])
+                    return result.returncode
+                finally:
+                    # Clean up
+                    os.unlink(temp_path)
+
+
+            if __name__ == "__main__":
+                # Run the generation and execution
+                try:
+                    code = asyncio.run(generate_code())
+                    sys.exit(execute_code(code))
+                except KeyboardInterrupt:
+                    print("\nOperation cancelled by user", file=sys.stderr)
+                    sys.exit(1)
+          '';
+
+    in
+    pkgs.runCommandLocal name
+      {
+        nativeBuildInputs = [ pkgs.makeWrapper ];
+      }
+      ''
+        makeWrapper ${aiRunner} $out \
+          --set PYTHONPATH "${pkgs.python3Packages.ollama}/${pkgs.python3.sitePackages}" \
+          --prefix PATH : "${lib.makeBinPath [ pkgs.ollama ]}"
+      '';
 }
